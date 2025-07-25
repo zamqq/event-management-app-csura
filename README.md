@@ -4,7 +4,7 @@ A web application that helps manage rooms, resources, and events for the Student
 
 ## The Problem & Solution
 
-**The Challenge:** During my time as Project Manager at the [Romanian-American University's Student Club](https://www.rau.ro/students-club/?lang=en), I identified a critical organizational problem: information about available rooms, resources, and event approvals was scattered across multiple platforms, people and difficult to access. This fragmentation led to:
+**The Challenge:** During my time as Project Manager at the [Romanian-American University's Student Club](https://www.rau.ro/students-club/?lang=en), I identified a critical organizational problem: information about available rooms, resources, and event approvals was scattered across multiple platforms, people, and difficult to access. This fragmentation led to:
 - Confusion about room availability and booking procedures
 - Difficulty tracking available resources for events
 - Lack of centralized event status monitoring
@@ -39,7 +39,7 @@ A web application that helps manage rooms, resources, and events for the Student
 
 1. Clone the repository:
 ```bash
-git clone <repository-url>
+git clone https://github.com/zamqq/event-management-app-csura.git
 cd csura
 ```
 
@@ -50,13 +50,15 @@ npm install
 
 3. Configure environment variables:
 ```bash
-cp .env.example .env
+touch .env
 ```
 
 Edit `.env` and add your configuration:
-- `MONGODB_URI`: Your MongoDB connection string
-- `JWT_SECRET`: A secure secret for JWT tokens
-- `JWT_EXPIRES_IN`: Token expiration time (e.g., "7d")
+```bash
+MONGODB_URI=your_mongodb_connection_string
+JWT_SECRET=your_secure_jwt_secret
+JWT_EXPIRES_IN=7d
+```
 
 4. Start the development server:
 ```bash
