@@ -9,8 +9,14 @@ export default defineEventHandler(async (event) => {
       })
     }
 
+    // Get the base URL for the current request
+    const headers = getHeaders(event)
+    const protocol = headers['x-forwarded-proto'] || 'https'
+    const host = headers.host
+    const baseUrl = `${protocol}://${host}`
+    
     // Fetch event data server-side
-    const eventResponse = await fetch(`http://localhost:3000/api/events/${eventId}`)
+    const eventResponse = await fetch(`${baseUrl}/api/events/${eventId}`)
     const eventData = await eventResponse.json()
     
     if (!eventData.success) {
@@ -21,6 +27,10 @@ export default defineEventHandler(async (event) => {
     }
 
     const currentEvent = eventData.event
+
+    // Check if this is a print request
+    const query = getQuery(event)
+    const isPrintRequest = query.print === 'true'
 
     // Format date for document
     const formatDocumentDate = (dateString: string) => {
@@ -71,6 +81,9 @@ export default defineEventHandler(async (event) => {
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     @media print {
+      .no-print {
+        display: none !important;
+      }
       .document-container {
         width: 210mm;
         min-height: 297mm;
@@ -97,6 +110,12 @@ export default defineEventHandler(async (event) => {
   </style>
 </head>
 <body>
+  ${isPrintRequest ? `
+  <div class="no-print bg-orange-100 border border-orange-400 text-orange-800 px-4 py-3 rounded mb-4 text-center">
+    <p class="font-medium">PDF generarea nu este disponibilă momentan pe server.</p>
+    <p>Vă rugăm să folosiți funcția de tipărire a browserului (Ctrl+P sau Cmd+P) pentru a salva documentul ca PDF.</p>
+  </div>
+  ` : ''}
   <div class="document-container bg-white min-h-screen" data-document-content data-document-ready>
     <div class="content w-full max-w-none mx-auto" style="width: 210mm; min-height: 297mm; padding: 20mm; position: relative;">
       

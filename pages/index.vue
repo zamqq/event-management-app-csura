@@ -20,7 +20,7 @@ const fetchUpcomingEvents = async () => {
     isLoadingEvents.value = true
     eventsError.value = ''
     
-    const response = await fetch('/api/events?limit=6')
+    const response = await fetch('/api/events?limit=10')
     const data = await response.json()
     
     if (data.success) {

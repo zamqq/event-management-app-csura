@@ -11,8 +11,14 @@ export default defineEventHandler(async (event) => {
       })
     }
 
+    // Get the base URL for the current request
+    const headers = getHeaders(event)
+    const protocol = headers['x-forwarded-proto'] || 'https'
+    const host = headers.host
+    const baseUrl = `${protocol}://${host}`
+    
     // Fetch event data to get the event name for filename
-    const eventResponse = await fetch(`http://localhost:3000/api/events/${eventId}`)
+    const eventResponse = await fetch(`${baseUrl}/api/events/${eventId}`)
     const eventData = await eventResponse.json()
     
     if (!eventData.success) {
@@ -23,12 +29,6 @@ export default defineEventHandler(async (event) => {
     }
 
     const currentEvent = eventData.event
-
-    // Get the base URL for the current request
-    const headers = getHeaders(event)
-    const protocol = headers['x-forwarded-proto'] || 'http'
-    const host = headers.host
-    const baseUrl = `${protocol}://${host}`
     
     // Generate the document URL (using the API endpoint that returns HTML)
     const documentUrl = `${baseUrl}/api/events/${eventId}/document`
@@ -59,8 +59,22 @@ export default defineEventHandler(async (event) => {
     console.error('PDF generation error details:', {
       message: error?.message || 'Unknown error',
       stack: error?.stack,
-      eventId: getRouterParam(event, 'id')
+      eventId: getRouterParam(event, 'id'),
+      isVercel: process.env.VERCEL === '1'
     })
+    
+    // If we're on Vercel and PDF generation fails, redirect to the document page
+    if (process.env.VERCEL === '1') {
+      const headers = getHeaders(event)
+      const protocol = headers['x-forwarded-proto'] || 'https'
+      const host = headers.host
+      const documentUrl = `${protocol}://${host}/api/events/${getRouterParam(event, 'id')}/document`
+      
+      // Return a 302 redirect to the document page with instructions
+      await sendRedirect(event, documentUrl + '?print=true', 302)
+      return
+    }
+    
     throw createError({
       statusCode: 500,
       statusMessage: `Failed to generate PDF: ${error?.message || 'Unknown error'}`

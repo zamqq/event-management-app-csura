@@ -2,8 +2,9 @@ import puppeteer from 'puppeteer'
 
 export const createPuppeteerBrowser = async () => {
   const isDev = process.env.NODE_ENV === 'development'
+  const isVercel = process.env.VERCEL === '1'
   
-  const launchOptions = {
+  const launchOptions: any = {
     headless: true,
     args: [
       '--no-sandbox',
@@ -14,24 +15,44 @@ export const createPuppeteerBrowser = async () => {
       '--no-zygote',
       '--disable-gpu',
       '--disable-web-security',
-      '--disable-features=VizDisplayCompositor'
+      '--disable-features=VizDisplayCompositor',
+      '--disable-background-timer-throttling',
+      '--disable-backgrounding-occluded-windows',
+      '--disable-renderer-backgrounding',
+      '--disable-ipc-flooding-protection'
     ]
   }
 
-  // Add additional args for production environments
-  if (!isDev) {
+  // Add additional args for production/serverless environments
+  if (!isDev || isVercel) {
     launchOptions.args.push(
       '--single-process',
-      '--disable-background-timer-throttling',
-      '--disable-backgrounding-occluded-windows',
-      '--disable-renderer-backgrounding'
+      '--memory-pressure-off',
+      '--max_old_space_size=4096'
     )
   }
 
+  // For Vercel, add more aggressive timeout and memory settings
+  if (isVercel) {
+    launchOptions.timeout = 30000
+    launchOptions.args.push('--max-old-space-size=512')
+  }
+
   try {
+    console.log('Launching Puppeteer with options:', { 
+      headless: launchOptions.headless, 
+      argsCount: launchOptions.args.length,
+      isVercel,
+      isDev 
+    })
     return await puppeteer.launch(launchOptions)
   } catch (error: any) {
-    console.error('Failed to launch Puppeteer:', error?.message)
+    console.error('Failed to launch Puppeteer:', {
+      message: error?.message,
+      stack: error?.stack,
+      isVercel,
+      isDev
+    })
     throw new Error(`Puppeteer launch failed: ${error?.message}`)
   }
 }
