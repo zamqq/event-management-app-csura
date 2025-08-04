@@ -1,6 +1,12 @@
 
 import mongoose from 'mongoose';
 
+// Import all models to ensure they are registered
+import Event from '../models/Event.js';
+import Resource from '../models/Resource.js';
+import Room from '../models/Room.js';
+import User from '../models/User.js';
+
 const connectDB = async () => {
   // If already connected, return existing connection
   if (mongoose.connection.readyState >= 1) {
@@ -31,5 +37,18 @@ const connectDB = async () => {
   }
 };
 
-export { connectDB };
+// Function to ensure all models are registered (important for serverless environments)
+const ensureModelsRegistered = () => {
+  // The models are already imported above, so they're registered
+  // This function exists to be called before any populate operations
+  // to guarantee model registration in serverless environments like Vercel
+  return {
+    Event,
+    Resource,
+    Room,
+    User
+  };
+};
+
+export { connectDB, ensureModelsRegistered };
 export default connectDB;

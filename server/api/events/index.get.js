@@ -1,14 +1,11 @@
-import { connectDB } from '~/server/utils/db'
-import Event from '~/server/models/Event'
-import Resource from '~/server/models/Resource'
-import Room from '~/server/models/Room'
-import User from '~/server/models/User'
+import { connectDB, ensureModelsRegistered } from '~/server/utils/db'
 import { handleError } from '~/server/utils/error'
 
 export default defineEventHandler(async (event) => {
   try {
-    // Connect to DB
+    // Connect to DB and ensure all models are registered
     await connectDB()
+    const { Event } = ensureModelsRegistered()
     
     // Get query parameters
     const query = getQuery(event)
@@ -35,36 +32,33 @@ export default defineEventHandler(async (event) => {
     // Filter by date range
     if (fromDate || toDate) {
       filter.eventDate = {}
-      
       if (fromDate) {
         filter.eventDate.$gte = new Date(fromDate)
       }
-      
       if (toDate) {
         filter.eventDate.$lte = new Date(toDate)
       }
     }
     
-    // Search functionality for event name and description
+    // Search in name and description
     if (search) {
-      const searchRegex = new RegExp(search, 'i') // Case-insensitive search
       filter.$or = [
-        { name: searchRegex },
-        { description: searchRegex }
+        { name: { $regex: search, $options: 'i' } },
+        { description: { $regex: search, $options: 'i' } }
       ]
     }
     
-    // Build query with optional limit
+    // Build query
     let eventsQuery = Event.find(filter)
-      .populate('room', 'name location capacity image')
+      .populate('room', 'name location')
       .populate('organizer', 'fullName email')
-      .populate('resources.resource', 'name category image description')
+      .populate('resources.resource', 'name category')
       .sort({ eventDate: 1, startTime: 1 })
     
-    // Apply limit if provided
+    // Apply limit if specified
     if (limit) {
       const limitNum = parseInt(limit)
-      if (!isNaN(limitNum) && limitNum > 0) {
+      if (limitNum > 0) {
         eventsQuery = eventsQuery.limit(limitNum)
       }
     }
@@ -73,10 +67,10 @@ export default defineEventHandler(async (event) => {
     
     return {
       success: true,
-      events
+      data: events,
+      total: events.length
     }
   } catch (error) {
-    console.error('Error fetching events:', error)
-    return handleError(event, error)
+    return handleError(error)
   }
 }) 

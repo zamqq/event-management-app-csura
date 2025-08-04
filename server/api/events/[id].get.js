@@ -1,38 +1,32 @@
-import { connectDB } from '~/server/utils/db'
-import Event from '~/server/models/Event'
-import '~/server/models/Resource'
-import '~/server/models/Room'
-import '~/server/models/User'
+import { connectDB, ensureModelsRegistered } from '~/server/utils/db'
 import { createCustomError, handleError } from '~/server/utils/error'
 
 export default defineEventHandler(async (event) => {
   try {
-    // Connect to DB
+    // Connect to DB and ensure all models are registered
     await connectDB()
+    const { Event } = ensureModelsRegistered()
     
-    // Get event ID from params
-    const id = event.context.params.id
+    const eventId = getRouterParam(event, 'id')
     
-    // Find event by ID
-    const eventDoc = await Event.findById(id)
-      .populate('room', 'name location capacity image facilities')
+    if (!eventId) {
+      throw createCustomError('Event ID is required', 400)
+    }
+    
+    const foundEvent = await Event.findById(eventId)
+      .populate('room', 'name location capacity facilities image')
       .populate('organizer', 'fullName email')
-      .populate('resources.resource', 'name category image description')
+      .populate('resources.resource', 'name category description image')
     
-    // Check if event exists
-    if (!eventDoc) {
-      throw createCustomError({
-        statusCode: 404,
-        statusMessage: 'Event not found'
-      })
+    if (!foundEvent) {
+      throw createCustomError('Event not found', 404)
     }
     
     return {
       success: true,
-      event: eventDoc
+      data: foundEvent
     }
   } catch (error) {
-    console.error('Error fetching event:', error)
-    return handleError(event, error)
+    return handleError(error)
   }
 }) 
