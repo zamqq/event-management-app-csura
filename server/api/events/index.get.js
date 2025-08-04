@@ -50,7 +50,7 @@ export default defineEventHandler(async (event) => {
     
     // Build query
     let eventsQuery = Event.find(filter)
-      .populate('room', 'name location')
+      .populate('room', 'name location image')
       .populate('organizer', 'fullName email')
       .populate('resources.resource', 'name category')
       .sort({ eventDate: 1, startTime: 1 })
@@ -67,8 +67,7 @@ export default defineEventHandler(async (event) => {
     
     return {
       success: true,
-      data: events,
-      total: events.length
+      events
     }
   } catch (error) {
     return handleError(error)
