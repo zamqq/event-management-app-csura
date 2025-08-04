@@ -1,10 +1,14 @@
 export default defineNuxtRouteMiddleware((to, from) => {
   // Skip middleware during server-side rendering
-  if (!process.client) return
+  if (!import.meta.client) return
   
-  const { isAuthenticated, isLoading } = useAuth()
+  // Only access auth state on client side
+  const { isAuthenticated, isLoading, initAuth } = useAuth()
   
-  // Wait for auth state to be determined
+  // Initialize auth on first client-side navigation
+  initAuth()
+  
+  // Wait for auth state to be determined on client
   if (isLoading.value) {
     return
   }
