@@ -4,7 +4,7 @@ A web application that helps manage rooms, resources, and events for the Student
 
 Check out the live demo and see it in action:
 
--> [Launch the App](https://event-management-app-csura.vercel.app/events)
+-> [Launch the App](https://event-management-app-csura.vercel.app)
 
 ![Events Page Screenshot](./public/images/events_page.png)
 ## The Problem & Solution

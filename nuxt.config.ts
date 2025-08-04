@@ -13,9 +13,6 @@ export default defineNuxtConfig({
         { charset: 'utf-8' },
         { name: 'viewport', content: 'width=device-width, initial-scale=1' },
         { name: 'format-detection', content: 'telephone=no' }
-      ],
-      link: [
-        { rel: 'preload', href: '/_nuxt/assets/css/main.css', as: 'style' }
       ]
     }
   },
@@ -31,14 +28,7 @@ export default defineNuxtConfig({
   vite: {
     plugins: [
       tailwindcss(),
-    ],
-    css: {
-      preprocessorOptions: {
-        css: {
-          charset: false
-        }
-      }
-    }
+    ]
   },
   nitro: {
     experimental: {

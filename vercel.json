@@ -1,0 +1,13 @@
+{
+  "headers": [
+    {
+      "source": "/_nuxt/assets/css/(.*)",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "text/css"
+        }
+      ]
+    }
+  ]
+}
