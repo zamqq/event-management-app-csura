@@ -1,1 +1,16 @@
 @import "tailwindcss";
+
+/* Prevent FOUC by hiding content until styles load */
+.nuxt-loading-indicator {
+  opacity: 0;
+}
+
+/* Ensure mobile styles load properly */
+html {
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+}
+
+body {
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}

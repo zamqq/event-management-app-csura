@@ -2,14 +2,11 @@
 
 A web application that helps manage rooms, resources, and events for the Students' Club at [Romanian-American University](https://www.rau.ro/?lang=en). Built with modern web technologies to solve real organizational problems.
 
-# Try It Out
-
-Want to explore how student clubs can manage resources more efficiently?
-
 Check out the live demo and see it in action:
 
 -> [Launch the App](https://event-management-app-csura.vercel.app/events)
 
+![Events Page Screenshot](./public/images/events_page.png)
 ## The Problem & Solution
 
 **The Challenge:** During my time as Project Manager at the [Romanian-American University's Student Club](https://www.rau.ro/students-club/?lang=en), I identified a critical organizational problem: information about available rooms, resources, and event approvals was scattered across multiple platforms, people, and difficult to access. This fragmentation led to:

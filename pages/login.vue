@@ -6,6 +6,14 @@ definePageMeta({
   authRoute: true
 })
 
+// Optimize this page for faster loading
+useHead({
+  title: 'Autentificare',
+  meta: [
+    { name: 'description', content: 'Conectează-te la contul tău CS-URA' }
+  ]
+})
+
 const email = ref('')
 const password = ref('')
 const rememberMe = ref(false)

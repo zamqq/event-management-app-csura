@@ -5,6 +5,26 @@ export default defineNuxtConfig({
   compatibilityDate: '2024-11-01',
   devtools: { enabled: true },
   css: ['~/assets/css/main.css'],
+  
+  // Add proper meta tags for mobile and prevent FOUC
+  app: {
+    head: {
+      meta: [
+        { charset: 'utf-8' },
+        { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+        { name: 'format-detection', content: 'telephone=no' }
+      ],
+      link: [
+        { rel: 'preload', href: '/_nuxt/assets/css/main.css', as: 'style' }
+      ]
+    }
+  },
+  
+  // Optimize rendering and hydration
+  ssr: true,
+  experimental: {
+    payloadExtraction: false
+  },
   modules: [
     'nuxt-toast'
   ],
@@ -12,6 +32,13 @@ export default defineNuxtConfig({
     plugins: [
       tailwindcss(),
     ],
+    css: {
+      preprocessorOptions: {
+        css: {
+          charset: false
+        }
+      }
+    }
   },
   nitro: {
     experimental: {
