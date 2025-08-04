@@ -1,5 +1,8 @@
 import { connectDB } from '~/server/utils/db'
 import Event from '~/server/models/Event'
+import Resource from '~/server/models/Resource'
+import Room from '~/server/models/Room'
+import User from '~/server/models/User'
 import { handleError } from '~/server/utils/error'
 
 export default defineEventHandler(async (event) => {
@@ -9,7 +12,7 @@ export default defineEventHandler(async (event) => {
     
     // Get query parameters
     const query = getQuery(event)
-    const { status, roomId, fromDate, toDate, organizerId, search } = query
+    const { status, roomId, fromDate, toDate, organizerId, search, limit } = query
     
     // Build filter object
     const filter = {}
@@ -51,12 +54,22 @@ export default defineEventHandler(async (event) => {
       ]
     }
     
-    // Fetch events with filters and populate room and organizer
-    const events = await Event.find(filter)
+    // Build query with optional limit
+    let eventsQuery = Event.find(filter)
       .populate('room', 'name location capacity image')
       .populate('organizer', 'fullName email')
       .populate('resources.resource', 'name category image description')
       .sort({ eventDate: 1, startTime: 1 })
+    
+    // Apply limit if provided
+    if (limit) {
+      const limitNum = parseInt(limit)
+      if (!isNaN(limitNum) && limitNum > 0) {
+        eventsQuery = eventsQuery.limit(limitNum)
+      }
+    }
+    
+    const events = await eventsQuery
     
     return {
       success: true,

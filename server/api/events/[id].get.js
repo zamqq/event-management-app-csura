@@ -1,5 +1,8 @@
 import { connectDB } from '~/server/utils/db'
 import Event from '~/server/models/Event'
+import '~/server/models/Resource'
+import '~/server/models/Room'
+import '~/server/models/User'
 import { createCustomError, handleError } from '~/server/utils/error'
 
 export default defineEventHandler(async (event) => {
