@@ -10,6 +10,8 @@
 </template>
 
 <script setup>
+import { onMounted } from 'vue'
+
 // Set proper meta tags for each page
 useSeoMeta({
   titleTemplate: '%s - CS-URA',
@@ -24,6 +26,14 @@ useHead({
   },
   bodyAttrs: {
     class: 'antialiased'
+  }
+})
+
+// Initialize auth as early as possible on client
+onMounted(() => {
+  if (import.meta.client) {
+    const { initAuth } = useAuth()
+    initAuth()
   }
 })
 </script>
