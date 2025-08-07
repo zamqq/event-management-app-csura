@@ -67,14 +67,13 @@ const handleKeyDown = (event) => {
 </script>
 
 <template>
-  <ClientOnly>
-    <div class="container max-w-md mx-auto px-4 py-16">
-      <div class="bg-white rounded-lg shadow-md p-8">
-        <h1 class="text-3xl font-bold text-gray-900 mb-6 text-center">Autentificare</h1>
-        
-        <div v-if="serverError" class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-6">
-          {{ serverError }}
-        </div>
+  <div class="container max-w-md mx-auto px-4 py-16">
+    <div class="bg-white rounded-lg shadow-md p-8">
+      <h1 class="text-3xl font-bold text-gray-900 mb-6 text-center">Autentificare</h1>
+      
+      <div v-if="serverError" class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-6">
+        {{ serverError }}
+      </div>
       
       <form @submit.prevent="handleSubmit" class="space-y-6">
         <div>
@@ -140,15 +139,4 @@ const handleKeyDown = (event) => {
       </div>
     </div>
   </div>
-  <template #fallback>
-    <div class="container max-w-md mx-auto px-4 py-16">
-      <div class="bg-white rounded-lg shadow-md p-8">
-        <div class="text-center">
-          <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500"></div>
-          <p class="mt-2 text-gray-600">Se încarcă...</p>
-        </div>
-      </div>
-    </div>
-  </template>
-  </ClientOnly>
 </template> 

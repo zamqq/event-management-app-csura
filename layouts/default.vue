@@ -1,7 +1,7 @@
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 
-const { user, isAuthenticated, isLoading: authLoading, logout } = useAuth()
+const { user, isAuthenticated, logout } = useAuth()
 
 const handleLogout = async () => {
   await logout()
@@ -76,16 +76,7 @@ const visibleNavItems = computed(() => {
 </script>
 
 <template>
-  <!-- Show loading screen while auth is being determined -->
-  <div v-if="authLoading" class="min-h-screen bg-sky-50 flex items-center justify-center">
-    <div class="text-center">
-      <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500"></div>
-      <p class="mt-2 text-gray-600">Se încarcă...</p>
-    </div>
-  </div>
-  
-  <!-- Main app content -->
-  <div v-else class="min-h-screen bg-sky-50 flex flex-col">
+  <div class="min-h-screen bg-sky-50 flex flex-col">
     <!-- Mobile Header -->
     <header class="lg:hidden bg-white shadow-sm">
       <div class="container mx-auto px-4 py-3 flex items-center justify-between">
@@ -104,18 +95,17 @@ const visibleNavItems = computed(() => {
         </div>
         
         <div class="flex items-center space-x-3">
-          <ClientOnly>
-            <!-- Show these links if user is not authenticated -->
-            <template v-if="!isAuthenticated">
-              <NuxtLink to="/login" class="text-gray-700 hover:text-gray-900">Conectare</NuxtLink>
-              <NuxtLink to="/register" class="bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-gray-700 transition">
-                Înregistrare
-              </NuxtLink>
-            </template>
-            
-            <!-- Show user dropdown if authenticated -->
-            <div v-else class="relative">
-              <button 
+          <!-- Show these links if user is not authenticated -->
+          <template v-if="!isAuthenticated">
+            <NuxtLink to="/login" class="text-gray-700 hover:text-gray-900">Conectare</NuxtLink>
+            <NuxtLink to="/register" class="bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-gray-700 transition">
+              Înregistrare
+            </NuxtLink>
+          </template>
+          
+          <!-- Show user dropdown if authenticated -->
+          <div v-else class="relative">
+            <button 
               @click="toggleDropdown"
               @keydown="handleKeyDown"
               class="flex items-center space-x-2 focus:outline-none"
@@ -166,18 +156,16 @@ const visibleNavItems = computed(() => {
                 Deconectare
               </button>
             </div>
-            </div>
-          </ClientOnly>
+          </div>
         </div>
       </div>
     </header>
     
     <!-- Mobile Sidebar (Overlay) -->
-    <ClientOnly>
-      <div 
-        v-if="isMobileMenuOpen" 
-        class="lg:hidden fixed inset-0 z-40 flex"
-      >
+    <div 
+      v-if="isMobileMenuOpen" 
+      class="lg:hidden fixed inset-0 z-40 flex"
+    >
       <!-- Backdrop -->
       <div 
         class="fixed inset-0 bg-gray-600 bg-opacity-75" 
@@ -233,42 +221,39 @@ const visibleNavItems = computed(() => {
         
         <!-- Mobile user info -->
         <div class="flex-shrink-0 flex border-t border-gray-200 p-4">
-          <ClientOnly>
-            <div v-if="isAuthenticated" class="flex items-center">
-              <div class="h-10 w-10 rounded-full bg-orange-500 flex items-center justify-center text-white">
-                {{ user?.fullName?.charAt(0) || '?' }}
-              </div>
-              <div class="ml-3">
-                <p class="text-base font-medium text-gray-700">{{ user?.fullName }}</p>
-                <button 
-                  @click="handleLogout"
-                  class="text-sm font-medium text-gray-500 hover:text-gray-700"
-                >
-                  Deconectare
-                </button>
-              </div>
+          <div v-if="isAuthenticated" class="flex items-center">
+            <div class="h-10 w-10 rounded-full bg-orange-500 flex items-center justify-center text-white">
+              {{ user?.fullName?.charAt(0) || '?' }}
             </div>
-            <div v-else class="flex items-center space-x-4">
-              <NuxtLink 
-                to="/login"
-                class="text-gray-600 hover:text-gray-900 font-medium"
-                @click="closeMobileMenu"
+            <div class="ml-3">
+              <p class="text-base font-medium text-gray-700">{{ user?.fullName }}</p>
+              <button 
+                @click="handleLogout"
+                class="text-sm font-medium text-gray-500 hover:text-gray-700"
               >
-                Conectare
-              </NuxtLink>
-              <NuxtLink 
-                to="/register"
-                class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-md transition"
-                @click="closeMobileMenu"
-              >
-                Înregistrare
-              </NuxtLink>
+                Deconectare
+              </button>
             </div>
-          </ClientOnly>
+          </div>
+          <div v-else class="flex items-center space-x-4">
+            <NuxtLink 
+              to="/login"
+              class="text-gray-600 hover:text-gray-900 font-medium"
+              @click="closeMobileMenu"
+            >
+              Conectare
+            </NuxtLink>
+            <NuxtLink 
+              to="/register"
+              class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-md transition"
+              @click="closeMobileMenu"
+            >
+              Înregistrare
+            </NuxtLink>
+          </div>
         </div>
       </div>
     </div>
-    </ClientOnly>
     
     <!-- Desktop Layout (Sidebar + Content) -->
     <div class="flex-grow flex">
@@ -283,63 +268,51 @@ const visibleNavItems = computed(() => {
           
           <!-- Sidebar Navigation -->
           <div class="flex-grow flex flex-col pt-5 pb-4 overflow-y-auto">
-            <ClientOnly>
-              <nav class="flex-1 px-3 space-y-1">
-                <NuxtLink 
-                  v-for="item in visibleNavItems" 
-                  :key="item.path"
-                  :to="item.path"
-                  class="group flex items-center px-3 py-2 text-sm font-medium rounded-md hover:bg-orange-50 hover:text-orange-600"
-                  :class="$route.path === item.path ? 'bg-orange-100 text-orange-600' : 'text-gray-700'"
+            <nav class="flex-1 px-3 space-y-1">
+              <NuxtLink 
+                v-for="item in visibleNavItems" 
+                :key="item.path"
+                :to="item.path"
+                class="group flex items-center px-3 py-2 text-sm font-medium rounded-md hover:bg-orange-50 hover:text-orange-600"
+                :class="$route.path === item.path ? 'bg-orange-100 text-orange-600' : 'text-gray-700'"
+              >
+                <svg 
+                  xmlns="http://www.w3.org/2000/svg" 
+                  class="mr-3 h-5 w-5"
+                  :class="$route.path === item.path ? 'text-orange-500' : 'text-gray-500 group-hover:text-orange-500'"
+                  fill="none" 
+                  viewBox="0 0 24 24" 
+                  stroke="currentColor"
                 >
-                  <svg 
-                    xmlns="http://www.w3.org/2000/svg" 
-                    class="mr-3 h-5 w-5"
-                    :class="$route.path === item.path ? 'text-orange-500' : 'text-gray-500 group-hover:text-orange-500'"
-                    fill="none" 
-                    viewBox="0 0 24 24" 
-                    stroke="currentColor"
-                  >
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="item.icon" />
-                  </svg>
-                  {{ item.label }}
-                </NuxtLink>
-              </nav>
-              <template #fallback>
-                <nav class="flex-1 px-3 space-y-1">
-                  <div class="group flex items-center px-3 py-2 text-sm font-medium rounded-md text-gray-700">
-                    <div class="mr-3 h-5 w-5 bg-gray-300 rounded animate-pulse"></div>
-                    <div class="h-4 bg-gray-300 rounded animate-pulse w-20"></div>
-                  </div>
-                </nav>
-              </template>
-            </ClientOnly>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="item.icon" />
+                </svg>
+                {{ item.label }}
+              </NuxtLink>
+            </nav>
           </div>
           
           <!-- User info -->
           <div class="flex-shrink-0 flex border-t border-gray-200 p-4">
-            <ClientOnly>
-              <div v-if="isAuthenticated" class="flex items-center">
-                <div class="h-10 w-10 rounded-full bg-orange-500 flex items-center justify-center text-white">
-                  {{ user?.fullName?.charAt(0) || '?' }}
-                </div>
-                <div class="ml-3 min-w-0 flex-1">
-                  <p class="text-sm font-medium text-gray-700 truncate">{{ user?.fullName }}</p>
-                  <button 
-                    @click="handleLogout"
-                    class="text-xs font-medium text-gray-500 hover:text-gray-700"
-                  >
-                    Deconectare
-                  </button>
-                </div>
+            <div v-if="isAuthenticated" class="flex items-center">
+              <div class="h-10 w-10 rounded-full bg-orange-500 flex items-center justify-center text-white">
+                {{ user?.fullName?.charAt(0) || '?' }}
               </div>
-              <div v-else class="flex items-center space-x-2">
-                <NuxtLink to="/login" class="text-sm text-gray-600 hover:text-gray-900">Conectare</NuxtLink>
-                <NuxtLink to="/register" class="text-sm bg-orange-500 hover:bg-orange-600 text-white px-3 py-1 rounded-md transition">
-                  Înregistrare
-                </NuxtLink>
+              <div class="ml-3 min-w-0 flex-1">
+                <p class="text-sm font-medium text-gray-700 truncate">{{ user?.fullName }}</p>
+                <button 
+                  @click="handleLogout"
+                  class="text-xs font-medium text-gray-500 hover:text-gray-700"
+                >
+                  Deconectare
+                </button>
               </div>
-            </ClientOnly>
+            </div>
+            <div v-else class="flex items-center space-x-2">
+              <NuxtLink to="/login" class="text-sm text-gray-600 hover:text-gray-900">Conectare</NuxtLink>
+              <NuxtLink to="/register" class="text-sm bg-orange-500 hover:bg-orange-600 text-white px-3 py-1 rounded-md transition">
+                Înregistrare
+              </NuxtLink>
+            </div>
           </div>
         </div>
       </div>

@@ -3,29 +3,22 @@ import { ref, readonly } from 'vue'
 // Create state outside of composable to share across instances
 const user = ref(null)
 const isAuthenticated = ref(false)
-const isLoading = ref(true) // Start as loading to prevent flash of content
+const isLoading = ref(false)
 const error = ref(null)
-let authInitialized = false // Track if auth has been initialized
 
 export const useAuth = () => {
   const router = useRouter()
   
   // Initialize auth state from localStorage if available
-  const initAuth = async () => {
+  const initAuth = () => {
+    isLoading.value = true
+    error.value = null
+    
     // Only access localStorage on client side
     if (!import.meta.client) {
       isLoading.value = false
-      return Promise.resolve()
+      return
     }
-    
-    // Prevent multiple initializations
-    if (authInitialized) {
-      return Promise.resolve()
-    }
-    
-    authInitialized = true
-    isLoading.value = true
-    error.value = null
     
     // Check if token exists in localStorage
     const token = localStorage.getItem('auth-token')
@@ -46,7 +39,6 @@ export const useAuth = () => {
       isLoading.value = false
       user.value = null
       isAuthenticated.value = false
-      return Promise.resolve()
     }
   }
   

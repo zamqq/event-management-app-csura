@@ -1,6 +1,6 @@
-export default defineNuxtRouteMiddleware((to) => {
+export default defineNuxtRouteMiddleware((to, from) => {
   // Skip middleware during server-side rendering
-  if (!import.meta.client) return
+  if (!process.client) return
   
   const { isAuthenticated, user, isLoading } = useAuth()
   
@@ -16,11 +16,10 @@ export default defineNuxtRouteMiddleware((to) => {
   
   // Check if user has admin role
   if (!user.value || user.value.role !== 'admin') {
-    // Show error message using toast
-    const toast = useToast()
-    toast.error('Acces interzis. Doar administratorii pot accesa această pagină.')
-    
-    // Redirect to homepage
-    return navigateTo('/')
+
+    throw createError({
+      statusCode: 403,
+      statusMessage: 'Access denied. Admin privileges required.'
+    })
   }
 }) 
