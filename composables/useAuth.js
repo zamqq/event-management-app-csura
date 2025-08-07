@@ -14,12 +14,6 @@ export const useAuth = () => {
     isLoading.value = true
     error.value = null
     
-    // Only access localStorage on client side
-    if (!import.meta.client) {
-      isLoading.value = false
-      return
-    }
-    
     // Check if token exists in localStorage
     const token = localStorage.getItem('auth-token')
     
@@ -60,7 +54,7 @@ export const useAuth = () => {
         
         // Store token in localStorage
         if (response.token) {
-          if (import.meta.client) localStorage.setItem('auth-token', response.token)
+          localStorage.setItem('auth-token', response.token)
         }
         
         // Navigate to homepage
@@ -96,7 +90,7 @@ export const useAuth = () => {
         
         // Store token in localStorage
         if (response.token) {
-          if (import.meta.client) localStorage.setItem('auth-token', response.token)
+          localStorage.setItem('auth-token', response.token)
         }
         
         // Navigate to homepage
@@ -128,8 +122,8 @@ export const useAuth = () => {
       user.value = null
       isAuthenticated.value = false
       
-          // Remove token from localStorage
-    if (import.meta.client) localStorage.removeItem('auth-token')
+      // Remove token from localStorage
+      localStorage.removeItem('auth-token')
       
       // Navigate to home page
       router.push('/login')
@@ -147,9 +141,9 @@ export const useAuth = () => {
     
     try {
       const response = await $fetch('/api/auth/me', {
-              headers: {
-        Authorization: `Bearer ${import.meta.client ? localStorage.getItem('auth-token') : ''}`
-      }
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('auth-token')}`
+        }
       })
       
       if (response.success) {
@@ -170,7 +164,7 @@ export const useAuth = () => {
   }
   
   // Initialize auth state on composable creation
-  if (import.meta.client) {
+  if (process.client) {
     // Only run in client-side
     initAuth()
   }
