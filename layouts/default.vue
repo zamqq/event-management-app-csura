@@ -333,7 +333,7 @@ const visibleNavItems = computed(() => {
                 <p class="text-gray-600 text-sm">&copy; 2025 CS-URA - Universitatea Româno-Americană</p>
               </div>
               <div class="flex space-x-4">
-                <a href="https://www.facebook.com/ClubulStudentilorURA" class="text-gray-600 hover:text-gray-900 text-sm">Contact</a>
+                <a href="https://www.linkedin.com/in/dariuszamcu/" class="text-gray-600 hover:text-gray-900 text-sm">Contact</a>
               </div>
             </div>
           </div>

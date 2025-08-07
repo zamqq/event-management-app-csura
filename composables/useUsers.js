@@ -98,6 +98,41 @@ export const useUsers = () => {
     }
   }
 
+  // Delete user
+  const deleteUser = async (userId) => {
+    isLoading.value = true
+    error.value = null
+
+    try {
+      const token = getAuthToken()
+      
+      if (!token) {
+        throw new Error('No authentication token found')
+      }
+
+      const response = await $fetch(`/api/users/${userId}`, {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+
+      if (response.success) {
+        // Remove the user from the local array
+        users.value = users.value.filter(user => user._id !== userId)
+        return response
+      } else {
+        error.value = response.message || 'Failed to delete user'
+        throw new Error(error.value)
+      }
+    } catch (err) {
+      error.value = err.message || 'Failed to delete user'
+      throw err
+    } finally {
+      isLoading.value = false
+    }
+  }
+
   // Get user by ID
   const getUserById = (userId) => {
     return users.value.find(user => user._id === userId)
@@ -114,6 +149,7 @@ export const useUsers = () => {
     error: readonly(error),
     fetchUsers,
     updateUser,
+    deleteUser,
     getUserById,
     clearError
   }
